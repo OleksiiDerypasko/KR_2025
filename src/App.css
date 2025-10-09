@@ -1,0 +1,193 @@
+/* Layout */
+.page { min-height: 100vh; background: #f5f6f8; color: #111827; }
+.container { max-width: 1100px; margin: 0 auto; padding: 0 16px; }
+.card { background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 16px; }
+
+/* Header with three parts */
+.header { background: rgba(255,255,255,0.9); border-bottom: 1px solid #e5e7eb; backdrop-filter: blur(6px); }
+.header-grid { display: grid; grid-template-columns: 1fr 2fr 1fr; gap: 12px; padding: 12px 0; }
+.header-part { border: 1px solid #d1d5db; border-radius: 10px; padding: 8px 12px; font-weight: 600; }
+.header-part.center { text-align: center; }
+.header-part.right { text-align: right; }
+@media (max-width: 900px) { .header-grid { grid-template-columns: 1fr; } .header-part.center, .header-part.right { text-align: left; } }
+
+/* Main */
+.main { padding: 16px 0 28px; }
+
+/* Controls */
+.controls { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; margin: 16px 0; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.small { width: 160px; }
+.label { font-size: 12px; color: #374151; }
+.input { border: 1px solid #d1d5db; border-radius: 8px; padding: 8px 12px; outline: none; }
+.input:focus { box-shadow: 0 0 0 3px rgba(99,102,241,0.25); border-color: #6366f1; }
+.btn { padding: 10px 16px; border-radius: 12px; border: 1px solid #e5e7eb; background: #fff; cursor: pointer; }
+.btn:hover { background: #f9fafb; }
+.btn.primary { background: #4f46e5; color: #fff; border-color: #4f46e5; }
+.btn.primary:hover { filter: brightness(1.05); }
+
+/* Tabs */
+.tabs { display: flex; gap: 8px; margin: 8px 0 12px; }
+.tab { padding: 8px 14px; border-radius: 12px; border: 1px solid #e5e7eb; background: #fff; color: #374151; font-size: 14px; cursor: pointer; }
+.tab:hover { background: #f9fafb; }
+.tab.active { background: #4f46e5; color: #fff; border-color: #4f46e5; }
+
+/* System layout */
+.system { display: grid; grid-template-columns: 24px 1fr; align-items: start; gap: 12px; }
+.equations { display: grid; gap: 8px; }
+
+/* Equation row */
+.eqRow { display: flex; align-items: center; min-height: 42px; flex-wrap: wrap; gap: 6px; }
+
+.varLabel sub { font-weight: 600; font-size: 0.8em; vertical-align: baseline; }
+.op { margin: 0 4px; font-weight: 600; }
+
+/* Inputs */
+.coefInput {
+  width: 88px;             /* трохи ширше, щоб влізав placeholder a11 */
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 6px 8px;
+  text-align: center;
+}
+.coefInput.rhs { width: 100px; }
+.coefInput::placeholder { color: #9ca3af; } /* сірий placeholder */
+.coefInput:focus { outline: none; box-shadow: 0 0 0 3px rgba(99,102,241,0.25); border-color: #6366f1; }
+
+/* DnD */
+.dropzone { text-align: center; }
+.hidden { display: none; }
+.dz-title { font-weight: 600; }
+.dz-sub { font-size: 12px; color: #6b7280; margin: 2px 0 6px; }
+
+/* Footer */
+.footer { padding: 18px 0 28px; font-size: 12px; color: #6b7280; }
+
+.header-part { 
+  border: none;              /* раніше було як у інпутів */
+  padding: 8px 0; 
+}
+
+.header-text {
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;   /* якщо назва довга */
+}
+
+/* ... (ваш існуючий CSS) ... */
+
+/* Header with three parts */
+.header { background: rgba(255,255,255,0.9); border-bottom: 1px solid #e5e7eb; backdrop-filter: blur(6px); }
+.header-grid { 
+  display: grid; 
+  grid-template-columns: 1fr 2fr 1fr auto; /* Додано 'auto' для Language Switcher */
+  gap: 12px; 
+  padding: 12px 0; 
+  align-items: center; /* Вирівнювання по центру по вертикалі */
+}
+.header-part { 
+  border: none;              
+  padding: 8px 0; 
+}
+.header-part.center { text-align: center; }
+.header-part.right { text-align: right; }
+
+.header-text {
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;   /* якщо назва довга */
+}
+
+/* New: Language Switcher specific styles */
+.language-switcher {
+  display: flex;
+  flex-direction: column; /* Label above select */
+  gap: 4px;
+  align-items: flex-end; /* Align to the right side of the grid cell */
+  padding: 8px 0; /* Match other header parts */
+}
+
+.language-switcher .label {
+  font-size: 10px; /* Smaller label for switcher */
+  color: #374151;
+  line-height: 1; /* Adjust line height for snug fit */
+}
+
+.language-switcher .input { /* Targeting the select element */
+  padding: 4px 8px; /* Smaller padding for select */
+  border-radius: 8px;
+  font-size: 14px;
+  /* Additional styles for select element if needed */
+  border: 1px solid #d1d5db; /* Keep the input border style */
+  background: #fff; /* White background */
+  cursor: pointer;
+}
+.language-switcher .input:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.25);
+  border-color: #6366f1;
+}
+
+
+@media (max-width: 900px) { 
+  .header-grid { 
+    grid-template-columns: 1fr; /* Складаємо в стовпець на вузьких екранах */
+    gap: 8px;
+  } 
+  .header-part.center, .header-part.right { text-align: left; } 
+  .language-switcher { align-items: flex-start; } /* Вирівнюємо вліво на вузьких екранах */
+}
+
+/* Main */
+.main { padding: 16px 0 28px; }
+
+/* Controls */
+.controls { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; margin: 16px 0; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.small { width: 160px; }
+.label { font-size: 12px; color: #374151; }
+.input { border: 1px solid #d1d5db; border-radius: 8px; padding: 8px 12px; outline: none; }
+.input:focus { box-shadow: 0 0 0 3px rgba(99,102,241,0.25); border-color: #6366f1; }
+.btn { padding: 10px 16px; border-radius: 12px; border: 1px solid #e5e7eb; background: #fff; cursor: pointer; }
+.btn:hover { background: #f9fafb; }
+.btn.primary { background: #4f46e5; color: #fff; border-color: #4f46e5; }
+.btn.primary:hover { filter: brightness(1.05); }
+
+/* Tabs */
+.tabs { display: flex; gap: 8px; margin: 8px 0 12px; }
+.tab { padding: 8px 14px; border-radius: 12px; border: 1px solid #e5e7eb; background: #fff; color: #374151; font-size: 14px; cursor: pointer; }
+.tab:hover { background: #f9fafb; }
+.tab.active { background: #4f46e5; color: #fff; border-color: #4f46e5; }
+
+/* System layout */
+.system { display: grid; grid-template-columns: 24px 1fr; align-items: start; gap: 12px; }
+.equations { display: grid; gap: 8px; }
+
+/* Equation row */
+.eqRow { display: flex; align-items: center; min-height: 42px; flex-wrap: wrap; gap: 6px; }
+
+.varLabel sub { font-weight: 600; font-size: 0.8em; vertical-align: baseline; }
+.op { margin: 0 4px; font-weight: 600; }
+
+/* Inputs */
+.coefInput {
+  width: 88px;             /* трохи ширше, щоб влізав placeholder a11 */
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 6px 8px;
+  text-align: center;
+}
+.coefInput.rhs { width: 100px; }
+.coefInput::placeholder { color: #9ca3af; } /* сірий placeholder */
+.coefInput:focus { outline: none; box-shadow: 0 0 0 3px rgba(99,102,241,0.25); border-color: #6366f1; }
+
+/* DnD */
+.dropzone { text-align: center; }
+.hidden { display: none; }
+.dz-title { font-weight: 600; }
+.dz-sub { font-size: 12px; color: #6b7280; margin: 2px 0 6px; }
+
+/* Footer */
+.footer { padding: 18px 0 28px; font-size: 12px; color: #6b7280; }
