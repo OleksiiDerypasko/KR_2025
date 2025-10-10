@@ -3,6 +3,6 @@ import App from './App';
 
 test('renders header text', () => {
   render(<App />);
-  const headerElement = screen.getByText(/Розв'язання СЛАР/i);
+  const headerElement = screen.getByText(/SLAE Solver/i);
   expect(headerElement).toBeInTheDocument();
 });

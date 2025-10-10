@@ -1,8 +1,12 @@
 import React from 'react';
+import { useSlae } from '../context/SlaeContext';
+import { Box, Button, Heading, Text } from '@chakra-ui/react';
 import { formatNumber } from '../utils/matrixUtils';
 import MatrixDisplay from '../components/MatrixDisplay';
 
-const ResultPage = ({ t, result, setScreen, ALGORITHMS }) => {
+const ResultPage = () => {
+  const { state, dispatch } = useSlae();
+  const { result } = state;
 
   const handleDownload = (format) => {
     if (!result) return;
@@ -14,6 +18,13 @@ const ResultPage = ({ t, result, setScreen, ALGORITHMS }) => {
       filename = 'slar_solution.json';
     } else { // txt
       const { x, algorithm, steps } = result;
+      const ALGORITHMS = [
+        { id: "cramer", label: "Cramer's method" },
+        { id: "gauss", label: "Gauss's method" },
+        { id: "seidel", label: "Seidel's method" },
+        { id: "gauss-jordan", label: "Gauss-Jordan method" },
+        { id: "jacobi", label: "Jacobi's method" },
+      ];
       const algoName = ALGORITHMS.find(a => a.id === algorithm)?.label || algorithm;
       let textContent = `Algorithm: ${algoName}\n\n`;
 
@@ -47,55 +58,53 @@ const ResultPage = ({ t, result, setScreen, ALGORITHMS }) => {
     URL.revokeObjectURL(url);
   };
 
-
   return (
-    <section className="card">
-      <h2 style={{ marginTop: 0 }}>{t('result_title')}</h2>
+    <Box as="section" p={4} borderWidth="1px" borderRadius="lg">
+      <Heading as="h2" size="lg" mb={4}>Result</Heading>
       {result ? (
         <>
-          <p>
-            {t('algorithm_display')}:{' '}
-            <b>
-              {ALGORITHMS.find((a) => a.id === result.algorithm)?.label ||
-                result.algorithm}
-            </b>
-          </p>
+          <Text>
+            Algorithm:{' '}
+            <Text as="b">
+              {result.algorithm}
+            </Text>
+          </Text>
 
-          <div className="steps-container">
+          <Box className="steps-container" mt={4}>
             {result.steps && result.steps.map((step, index) => (
-              <div key={index} className="step">
-                <h4>{step.title}</h4>
+              <Box key={index} className="step" mb={4}>
+                <Heading as="h4" size="md">{step.title}</Heading>
                 {step.matrix && (
                   <MatrixDisplay matrix={step.matrix} b={step.b} />
                 )}
-                {step.result && <p>{step.result}</p>}
-              </div>
+                {step.result && <Text>{step.result}</Text>}
+              </Box>
             ))}
-          </div>
+          </Box>
 
-          <div style={{ display: 'grid', gap: 6, marginTop: '1rem' }}>
+          <Box mt={4}>
             {result.x && result.x.map((xi, i) => (
-              <div key={i}>
-                x<sub>{i + 1}</sub> = <b>{formatNumber(xi)}</b>
-              </div>
+              <Text key={i}>
+                x<sub>{i + 1}</sub> = <Text as="b">{formatNumber(xi)}</Text>
+              </Text>
             ))}
-          </div>
+          </Box>
         </>
       ) : (
-        <p>{t('no_result_message')}</p>
+        <Text>No result.</Text>
       )}
-      <div style={{ marginTop: 12, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-        <button className="btn" onClick={() => setScreen('input')}>
-          {t('back_to_input_button')}
-        </button>
-        <button className="btn" onClick={() => handleDownload('txt')}>
+      <Box mt={4} display="flex" gap={2}>
+        <Button onClick={() => dispatch({ type: 'SET_SCREEN', payload: 'input' })}>
+          Back to input
+        </Button>
+        <Button onClick={() => handleDownload('txt')}>
           Download .txt
-        </button>
-        <button className="btn" onClick={() => handleDownload('json')}>
+        </Button>
+        <Button onClick={() => handleDownload('json')}>
           Download .json
-        </button>
-      </div>
-    </section>
+        </Button>
+      </Box>
+    </Box>
   );
 };
 

@@ -4,7 +4,6 @@ import { formatNumber } from '../utils/matrixUtils';
 
 const MatrixDisplay = ({ matrix, b }) => {
   const eqWrapRef = useRef(null);
-  const n = matrix.length;
 
   return (
     <div className="system" style={{ marginBottom: '1rem' }}>
