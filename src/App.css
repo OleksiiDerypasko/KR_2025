@@ -3,91 +3,23 @@
 .container { max-width: 1100px; margin: 0 auto; padding: 0 16px; }
 .card { background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 16px; }
 
-/* Header with three parts */
-.header { background: rgba(255,255,255,0.9); border-bottom: 1px solid #e5e7eb; backdrop-filter: blur(6px); }
-.header-grid { display: grid; grid-template-columns: 1fr 2fr 1fr; gap: 12px; padding: 12px 0; }
-.header-part { border: 1px solid #d1d5db; border-radius: 10px; padding: 8px 12px; font-weight: 600; }
-.header-part.center { text-align: center; }
-.header-part.right { text-align: right; }
-@media (max-width: 900px) { .header-grid { grid-template-columns: 1fr; } .header-part.center, .header-part.right { text-align: left; } }
-
-/* Main */
-.main { padding: 16px 0 28px; }
-
-/* Controls */
-.controls { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; margin: 16px 0; }
-.field { display: flex; flex-direction: column; gap: 6px; }
-.small { width: 160px; }
-.label { font-size: 12px; color: #374151; }
-.input { border: 1px solid #d1d5db; border-radius: 8px; padding: 8px 12px; outline: none; }
-.input:focus { box-shadow: 0 0 0 3px rgba(99,102,241,0.25); border-color: #6366f1; }
-.btn { padding: 10px 16px; border-radius: 12px; border: 1px solid #e5e7eb; background: #fff; cursor: pointer; }
-.btn:hover { background: #f9fafb; }
-.btn.primary { background: #4f46e5; color: #fff; border-color: #4f46e5; }
-.btn.primary:hover { filter: brightness(1.05); }
-
-/* Tabs */
-.tabs { display: flex; gap: 8px; margin: 8px 0 12px; }
-.tab { padding: 8px 14px; border-radius: 12px; border: 1px solid #e5e7eb; background: #fff; color: #374151; font-size: 14px; cursor: pointer; }
-.tab:hover { background: #f9fafb; }
-.tab.active { background: #4f46e5; color: #fff; border-color: #4f46e5; }
-
-/* System layout */
-.system { display: grid; grid-template-columns: 24px 1fr; align-items: start; gap: 12px; }
-.equations { display: grid; gap: 8px; }
-
-/* Equation row */
-.eqRow { display: flex; align-items: center; min-height: 42px; flex-wrap: wrap; gap: 6px; }
-
-.varLabel sub { font-weight: 600; font-size: 0.8em; vertical-align: baseline; }
-.op { margin: 0 4px; font-weight: 600; }
-
-/* Inputs */
-.coefInput {
-  width: 88px;             /* трохи ширше, щоб влізав placeholder a11 */
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  padding: 6px 8px;
-  text-align: center;
+/* Header */
+.header {
+  background: rgba(255,255,255,0.9);
+  border-bottom: 1px solid #e5e7eb;
+  backdrop-filter: blur(6px);
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
-.coefInput.rhs { width: 100px; }
-.coefInput::placeholder { color: #9ca3af; } /* сірий placeholder */
-.coefInput:focus { outline: none; box-shadow: 0 0 0 3px rgba(99,102,241,0.25); border-color: #6366f1; }
-
-/* DnD */
-.dropzone { text-align: center; }
-.hidden { display: none; }
-.dz-title { font-weight: 600; }
-.dz-sub { font-size: 12px; color: #6b7280; margin: 2px 0 6px; }
-
-/* Footer */
-.footer { padding: 18px 0 28px; font-size: 12px; color: #6b7280; }
-
-.header-part { 
-  border: none;              /* раніше було як у інпутів */
-  padding: 8px 0; 
-}
-
-.header-text {
-  font-weight: 600;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;   /* якщо назва довга */
-}
-
-/* ... (ваш існуючий CSS) ... */
-
-/* Header with three parts */
-.header { background: rgba(255,255,255,0.9); border-bottom: 1px solid #e5e7eb; backdrop-filter: blur(6px); }
 .header-grid { 
   display: grid; 
-  grid-template-columns: 1fr 2fr 1fr auto; /* Додано 'auto' для Language Switcher */
+  grid-template-columns: 1fr 2fr 1fr auto;
   gap: 12px; 
   padding: 12px 0; 
-  align-items: center; /* Вирівнювання по центру по вертикалі */
+  align-items: center;
 }
 .header-part { 
-  border: none;              
   padding: 8px 0; 
 }
 .header-part.center { text-align: center; }
@@ -97,31 +29,27 @@
   font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;   /* якщо назва довга */
+  text-overflow: ellipsis;
 }
 
-/* New: Language Switcher specific styles */
+/* Language Switcher */
 .language-switcher {
   display: flex;
-  flex-direction: column; /* Label above select */
+  flex-direction: column;
   gap: 4px;
-  align-items: flex-end; /* Align to the right side of the grid cell */
-  padding: 8px 0; /* Match other header parts */
+  align-items: flex-end;
 }
-
 .language-switcher .label {
-  font-size: 10px; /* Smaller label for switcher */
+  font-size: 10px;
   color: #374151;
-  line-height: 1; /* Adjust line height for snug fit */
+  line-height: 1;
 }
-
-.language-switcher .input { /* Targeting the select element */
-  padding: 4px 8px; /* Smaller padding for select */
+.language-switcher .input {
+  padding: 4px 8px;
   border-radius: 8px;
   font-size: 14px;
-  /* Additional styles for select element if needed */
-  border: 1px solid #d1d5db; /* Keep the input border style */
-  background: #fff; /* White background */
+  border: 1px solid #d1d5db;
+  background: #fff;
   cursor: pointer;
 }
 .language-switcher .input:focus {
@@ -130,64 +58,117 @@
   border-color: #6366f1;
 }
 
-
 @media (max-width: 900px) { 
   .header-grid { 
-    grid-template-columns: 1fr; /* Складаємо в стовпець на вузьких екранах */
+    grid-template-columns: 1fr;
     gap: 8px;
   } 
   .header-part.center, .header-part.right { text-align: left; } 
-  .language-switcher { align-items: flex-start; } /* Вирівнюємо вліво на вузьких екранах */
+  .language-switcher { align-items: flex-start; }
 }
 
 /* Main */
-.main { padding: 16px 0 28px; }
+.main { padding: 24px 0 32px; }
 
 /* Controls */
-.controls { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; margin: 16px 0; }
+.controls { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; margin-bottom: 24px; }
 .field { display: flex; flex-direction: column; gap: 6px; }
 .small { width: 160px; }
-.label { font-size: 12px; color: #374151; }
-.input { border: 1px solid #d1d5db; border-radius: 8px; padding: 8px 12px; outline: none; }
+.label { font-size: 12px; color: #374151; font-weight: 500; }
+.input {
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 8px 12px;
+  outline: none;
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
 .input:focus { box-shadow: 0 0 0 3px rgba(99,102,241,0.25); border-color: #6366f1; }
-.btn { padding: 10px 16px; border-radius: 12px; border: 1px solid #e5e7eb; background: #fff; cursor: pointer; }
+.btn {
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-weight: 500;
+}
 .btn:hover { background: #f9fafb; }
 .btn.primary { background: #4f46e5; color: #fff; border-color: #4f46e5; }
-.btn.primary:hover { filter: brightness(1.05); }
+.btn.primary:hover { filter: brightness(1.1); }
 
 /* Tabs */
-.tabs { display: flex; gap: 8px; margin: 8px 0 12px; }
-.tab { padding: 8px 14px; border-radius: 12px; border: 1px solid #e5e7eb; background: #fff; color: #374151; font-size: 14px; cursor: pointer; }
-.tab:hover { background: #f9fafb; }
-.tab.active { background: #4f46e5; color: #fff; border-color: #4f46e5; }
+.tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+.tab {
+  padding: 8px 14px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background: #f3f4f6;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+.tab:hover { background: #e5e7eb; }
+.tab.active { background: #4f46e5; color: #fff; }
 
 /* System layout */
 .system { display: grid; grid-template-columns: 24px 1fr; align-items: start; gap: 12px; }
 .equations { display: grid; gap: 8px; }
-
-/* Equation row */
 .eqRow { display: flex; align-items: center; min-height: 42px; flex-wrap: wrap; gap: 6px; }
-
 .varLabel sub { font-weight: 600; font-size: 0.8em; vertical-align: baseline; }
-.op { margin: 0 4px; font-weight: 600; }
+.op { margin: 0 4px; font-weight: 500; }
 
 /* Inputs */
 .coefInput {
-  width: 88px;             /* трохи ширше, щоб влізав placeholder a11 */
+  width: 88px;
   border: 1px solid #d1d5db;
   border-radius: 8px;
   padding: 6px 8px;
   text-align: center;
+  transition: box-shadow 0.2s, border-color 0.2s;
 }
 .coefInput.rhs { width: 100px; }
-.coefInput::placeholder { color: #9ca3af; } /* сірий placeholder */
+.coefInput::placeholder { color: #9ca3af; }
 .coefInput:focus { outline: none; box-shadow: 0 0 0 3px rgba(99,102,241,0.25); border-color: #6366f1; }
 
 /* DnD */
-.dropzone { text-align: center; }
+.dropzone { text-align: center; padding: 48px 24px; border: 2px dashed #e5e7eb; transition: background-color 0.2s; }
+.dropzone:hover { background-color: #f9fafb; }
 .hidden { display: none; }
 .dz-title { font-weight: 600; }
 .dz-sub { font-size: 12px; color: #6b7280; margin: 2px 0 6px; }
 
+/* Results & Steps */
+.steps-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+.step {
+  padding: 1rem;
+  border: 1px solid #f3f4f6;
+  border-radius: 0.5rem;
+  background-color: #f9fafb;
+}
+.step h4 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+.coef-display {
+  display: inline-block;
+  min-width: 4ch;
+  text-align: right;
+  padding: 0.25rem;
+  font-family: monospace;
+  background-color: #fff;
+  border-radius: 4px;
+  border: 1px solid #e5e7eb;
+}
+
 /* Footer */
-.footer { padding: 18px 0 28px; font-size: 12px; color: #6b7280; }
+.footer { padding: 24px 0 32px; font-size: 12px; color: #9ca3af; text-align: center; }
