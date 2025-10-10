@@ -9,6 +9,8 @@ import { solveCramer } from "./algorithms/cramer";
 import { solveGaussJordan } from "./algorithms/gaussJordan";
 import { solveSeidel } from "./algorithms/seidel";
 import { solveJacobi } from "./algorithms/jacobi";
+// Крок 1: Імпортуємо вашу нову функцію парсера
+import { parseFile } from "./utils/fileParser";
 
 // --- START: Multilingual Setup ---
 const TRANSLATIONS = {
@@ -38,7 +40,8 @@ const TRANSLATIONS = {
     algorithm_display: "Алгоритм",
     no_result_message: "Немає результату.",
     back_to_input_button: "Назад до введення",
-    language_switcher_label: "Мова"
+    language_switcher_label: "Мова",
+    footer_text: "© 2025 Дерипаско Олексій. Всі права захищено."
   },
   en: {
     header_left: "Coursework",
@@ -66,9 +69,11 @@ const TRANSLATIONS = {
     algorithm_display: "Algorithm",
     no_result_message: "No result.",
     back_to_input_button: "Back to input",
-    language_switcher_label: "Language"
+    language_switcher_label: "Language",
+    footer_text: "© 2025 Derypasko Oleksii. All rights reserved."
   }
 };
+
 
 const getInitialLanguage = () => {
   const storedLang = localStorage.getItem("language");
@@ -77,7 +82,7 @@ const getInitialLanguage = () => {
 // --- END: Multilingual Setup ---
 
 function App() {
-  // --- START: Multilingual State and Function ---
+  // --- Multilingual State and Function ---
   const [language, setLanguage] = useState(getInitialLanguage);
 
   const t = useCallback((key, params) => {
@@ -106,9 +111,8 @@ function App() {
     { id: "gauss-jordan", label: t("gauss_jordan_method"), solver: solveGaussJordan },
     { id: "jacobi", label: t("jacobi_method"), solver: solveJacobi },
   ];
-  // --- END: Multilingual State and Function ---
 
-  // State
+  // --- State ---
   const [n, setN] = useState(3);
   const [algo, setAlgo] = useState(ALGORITHMS[1].id);
   const [activeTab, setActiveTab] = useState("manual");
@@ -117,7 +121,7 @@ function App() {
   const [screen, setScreen] = useState("input");
   const [result, setResult] = useState(null);
 
-  // Handlers
+  // --- Handlers ---
   const changeN = (value) => {
     const v = Math.max(1, Math.min(9, Number(value) || 1));
     setN(v);
@@ -165,120 +169,20 @@ function App() {
     }
   };
 
-const parseFile = (file) => {
-  const reader = new FileReader();
-
-  reader.onload = () => {
-    try {
-      // 1) Текст + нормалізація дивних символів
-      const raw = String(reader.result || "")
-        .replace(/\u00A0/g, " ")       // NBSP -> space
-        .replace(/\u2212/g, "-")       // unicode minus -> '-'
-        .replace(/[\u2013\u2014]/g, "-"); // en/em dash -> '-'
-
-      // 2) Рядки: прибрати порожні та коментарі
-      const lines = raw
-        .split(/\r?\n/)
-        .map(l => l.trim())
-        .filter(l => l.length > 0 && !/^(#|\/\/|;)/.test(l));
-
-      if (lines.length === 0) {
-        throw new Error("File is empty or in the wrong format.");
-      }
-
-      // 3) Токенізація рядка: пробіли/таб/коми/крапки з комою/|
-      const tokenize = (line) =>
-        line.split(/[,\s;|]+/).filter(Boolean).map(v => v.replace(",", "."));
-
-      // 4) Визначаємо формат: чи перший рядок це N?
-      const firstTokens = tokenize(lines[0]);
-      const firstInt = Number(firstTokens[0]);
-      const firstLooksLikeN =
-        firstTokens.length === 1 && Number.isInteger(firstInt) && firstInt >= 1 && firstInt <= 9;
-
-      let N, numberRows; // масиви числових токенів по рядках (без коментарів)
-      if (firstLooksLikeN) {
-        // Формат: N, далі N рядків A, останній рядок B
-        N = firstInt;
-        const rest = lines.slice(1).map(tokenize);
-        if (rest.length !== N + 1) {
-          throw new Error(`Expected ${N} rows for A and 1 row for B after N, got ${rest.length}.`);
-        }
-        numberRows = rest;
-      } else {
-        // Формат: одразу N рядків (визначаємо N по кількості рядків)
-        const rows = lines.map(tokenize);
-        const n = rows.length;
-        if (n < 1 || n > 9) {
-          throw new Error("Invalid N derived from rows count. N must be between 1 and 9.");
-        }
-        N = n;
-        numberRows = rows;
-      }
-
-      // 5) Перевіряємо два допустимих варіанти розмірів
-      const looksLikeSeparateB =
-        numberRows.length === N + 1 &&
-        numberRows.slice(0, N).every(r => r.length === N) &&
-        numberRows[N].length === N;
-
-      const looksLikeAugmented =
-        numberRows.length === N &&
-        numberRows.every(r => r.length === N + 1);
-
-      if (!looksLikeSeparateB && !looksLikeAugmented) {
-        const rowsCnt = numberRows.length;
-        const colsMax = numberRows.reduce((m, r) => Math.max(m, r.length), 0) || 0;
-        throw new Error(
-          `Invalid matrix dimensions. Expected NxN + B (total ${N + 1} lines) ` +
-          `or N lines of N+1 numbers (augmented). Got ${rowsCnt}x${colsMax}.`
-        );
-      }
-
-      // 6) Допоміжне перетворення до числа з підказкою де помилка
-      const toNum = (s, i, j) => {
-        const v = Number(s);
-        if (!Number.isFinite(v)) {
-          throw new Error(`Non-numeric value at row ${i + 1}, col ${j + 1}: "${s}"`);
-        }
-        return v;
-      };
-
-      // 7) Формуємо A, B
-      changeN(N);
-      const nextA = makeSquare(N);
-      const nextB = makeVector(N);
-
-      if (looksLikeSeparateB) {
-        for (let r = 0; r < N; r++) {
-          const row = numberRows[r];
-          for (let c = 0; c < N; c++) nextA[r][c] = toNum(row[c], r + 1, c + 1);
-        }
-        const last = numberRows[N];
-        for (let c = 0; c < N; c++) nextB[c] = toNum(last[c], N + 1, c + 1);
-      } else {
-        // Augmented [A|B]
-        for (let r = 0; r < N; r++) {
-          const row = numberRows[r];
-          for (let c = 0; c < N; c++) nextA[r][c] = toNum(row[c], r + 1, c + 1);
-          nextB[r] = toNum(row[N], r + 1, N + 1);
-        }
-      }
-
-      setA(nextA);
-      setB(nextB);
-      setActiveTab("manual");
-    } catch (e) {
-      toast.error(`${t("error_prefix")}: ${e.message}`);
-    }
+  // Функція-обгортка, яка буде викликати наш імпортований парсер
+  const handleFileParse = (file) => {
+    // Формуємо об'єкт-контекст з усіма необхідними даними та функціями
+    const context = {
+      changeN,
+      setA,
+      setB,
+      setActiveTab,
+      t,
+      toast,
+    };
+    // Викликаємо парсер, передаючи файл та контекст
+    parseFile(file, context);
   };
-
-  reader.onerror = () => {
-    toast.error(`${t("error_prefix")}: Could not read the file.`);
-  };
-
-  reader.readAsText(file);
-};
 
   return (
     <div className="page">
@@ -321,7 +225,7 @@ const parseFile = (file) => {
             updateA={updateA}
             b={b}
             updateB={updateB}
-            parseFile={parseFile}
+            parseFile={handleFileParse}
             TABS={TABS}
             ALGORITHMS={ALGORITHMS}
           />
@@ -344,3 +248,4 @@ const parseFile = (file) => {
 }
 
 export default App;
+
