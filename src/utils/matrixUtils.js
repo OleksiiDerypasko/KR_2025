@@ -35,12 +35,15 @@ export const toNumericVector = (b) => {
   });
 };
 
-export const formatNumber = (x) => {
+export const formatNumber = (x, digits = 2, expThreshold = 1e6, zeroEps = 1e-9) => {
   if (!Number.isFinite(x)) return String(x);
-  // a-la-Excel rounding
-  const s = Math.abs(x) < 1e-6 || Math.abs(x) > 1e6 ? x.toExponential(6) : x.toFixed(6);
-  return s.replace(/(\.\d*?[1-9])0+$/,"$1").replace(/\.0+$/,"");
+  if (Math.abs(x) < zeroEps) return (0).toFixed(digits);   // "0.00"
+  // експонента — лише для ДУЖЕ великих |x|
+  return (Math.abs(x) > expThreshold)
+    ? x.toExponential(digits)
+    : x.toFixed(digits);                                    // "1.67", "0.33", "-0.20"
 };
+
 
 export const determinant = (matrix) => {
   const n = matrix.length;
@@ -59,3 +62,29 @@ export const determinant = (matrix) => {
   }
   return det;
 };
+
+export const validateSolution = (A, b, x, tol = 1e-6) => {
+  if (!A || !b || !x) return false;
+  const n = A.length;
+  if (x.length !== n || b.length !== n) return false;
+
+  let ok = true;
+  for (let i = 0; i < n; i++) {
+    let s = 0;
+    for (let j = 0; j < n; j++) s += A[i][j] * x[j];
+    if (Math.abs(s - b[i]) > tol) { ok = false; break; }
+  }
+  return ok; // ← той самий flag
+};
+
+
+
+
+export const fmtRow2 = (row) => row.map(fmt2);
+export const fmtMat2 = (M) => M.map(fmtRow2);
+
+export const fmt2 = (x) => (Number.isFinite(x) ? (Math.abs(x) < 1e-12 ? "0.00" : x.toFixed(2)) : String(x));
+export const fmt6 = (x) => (Number.isFinite(x) ? (Math.abs(x) < 1e-12 ? "0.000000" : x.toFixed(6)) : String(x));
+
+export const rowOp = (to, factor, from) =>  // R_to := R_to − factor * R_from  (підпис кроку)
+  `R${to} := R${to} − (${fmt6(factor)})·R${from}`;

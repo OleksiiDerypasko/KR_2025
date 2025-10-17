@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useCallback } from "react";
+// App.js
+import React, { useState, useEffect, useMemo } from "react";
 import "./App.css";
 import { Toaster, toast } from 'react-hot-toast';
 import InputPage from "./pages/InputPage";
@@ -9,91 +10,29 @@ import { solveCramer } from "./algorithms/cramer";
 import { solveGaussJordan } from "./algorithms/gaussJordan";
 import { solveSeidel } from "./algorithms/seidel";
 import { solveJacobi } from "./algorithms/jacobi";
-// Крок 1: Імпортуємо вашу нову функцію парсера
 import { parseFile } from "./utils/fileParser";
+import { validateSolution } from "./utils/matrixUtils";
 
-// --- START: Multilingual Setup ---
-const TRANSLATIONS = {
-  uk: {
-    header_left: "Курсова робота",
-    header_center: "Розв'язання СЛАР",
-    header_right: "Дерипаско О.В. КН-423а",
-    tab_manual_input: "Ручне заповнення",
-    tab_drag_drop: "Drag & Drop",
-    system_size_label: "Розмір системи N (1–9)",
-    algorithm_label: "Алгоритм розв’язання",
-    cramer_method: "Метод Крамера",
-    gauss_method: "Метод Гауса",
-    seidel_method: "Метод Зейделя",
-    gauss_jordan_method: "Метод Гауса-Жордана",
-    jacobi_method: "Метод Якобі",
-    calculate_button: "Розрахувати",
-    error_prefix: "Помилка",
-    invalid_value_a: "Некоректне значення a{{r}}{{c}}",
-    invalid_value_b: "Некоректне значення b{{r}}",
-    singular_system_error: "Система вироджена або має нескінченно багато розв’язків.",
-    zero_diagonal_error: "Нуль на діагоналі.",
-    dropzone_title: "Перетягніть файл сюди",
-    dropzone_or: "або",
-    choose_file_button: "Обрати файл",
-    result_title: "Результат",
-    algorithm_display: "Алгоритм",
-    no_result_message: "Немає результату.",
-    back_to_input_button: "Назад до введення",
-    language_switcher_label: "Мова",
-    footer_text: "© 2025 Дерипаско Олексій. Всі права захищено."
-  },
-  en: {
-    header_left: "Coursework",
-    header_center: "Solution of SLAE",
-    header_right: "Derypasko O.V. KN-423a",
-    tab_manual_input: "Manual Input",
-    tab_drag_drop: "Drag & Drop",
-    system_size_label: "System Size N (1–9)",
-    algorithm_label: "Solution Algorithm",
-    cramer_method: "Cramer's method",
-    gauss_method: "Gauss's method",
-    seidel_method: "Seidel's method",
-    gauss_jordan_method: "Gauss-Jordan method",
-    jacobi_method: "Jacobi's method",
-    calculate_button: "Calculate",
-    error_prefix: "Error",
-    invalid_value_a: "Invalid value a{{r}}{{c}}",
-    invalid_value_b: "Invalid value b{{r}}",
-    singular_system_error: "System is singular or has infinitely many solutions.",
-    zero_diagonal_error: "Zero on diagonal.",
-    dropzone_title: "Drag & drop file here",
-    dropzone_or: "or",
-    choose_file_button: "Choose File",
-    result_title: "Result",
-    algorithm_display: "Algorithm",
-    no_result_message: "No result.",
-    back_to_input_button: "Back to input",
-    language_switcher_label: "Language",
-    footer_text: "© 2025 Derypasko Oleksii. All rights reserved."
-  }
-};
+// прибери великий TRANSLATIONS якщо ще лишився
+import { STRINGS } from "./i18n/strings";
+import { createT } from "./i18n";
 
+import { ERR } from "./errors/codes";
+import { AppError, err as makeErr } from "./errors/AppError";
+import { formatError } from "./errors/formatError";
 
 const getInitialLanguage = () => {
   const storedLang = localStorage.getItem("language");
-  return storedLang && TRANSLATIONS[storedLang] ? storedLang : "uk";
+  return storedLang && STRINGS[storedLang] ? storedLang : "uk";
 };
-// --- END: Multilingual Setup ---
+
 
 function App() {
-  // --- Multilingual State and Function ---
-  const [language, setLanguage] = useState(getInitialLanguage);
-
-  const t = useCallback((key, params) => {
-    let text = TRANSLATIONS[language][key] || key;
-    if (params) {
-      for (const p in params) {
-        text = text.replace(new RegExp(`{{${p}}}`, "g"), params[p]);
-      }
-    }
-    return text;
-  }, [language]);
+  const [language, setLanguage] = useState(() => {
+    const stored = localStorage.getItem("language");
+    return stored && STRINGS[stored] ? stored : "uk";
+  });
+  const t = useMemo(() => createT(language), [language]);
 
   useEffect(() => {
     localStorage.setItem("language", language);
@@ -102,6 +41,7 @@ function App() {
   const TABS = [
     { id: "manual", label: t("tab_manual_input") },
     { id: "dnd", label: t("tab_drag_drop") },
+    { id: "guide", label: t("guidelines_title") },
   ];
 
   const ALGORITHMS = [
@@ -112,7 +52,6 @@ function App() {
     { id: "jacobi", label: t("jacobi_method"), solver: solveJacobi },
   ];
 
-  // --- State ---
   const [n, setN] = useState(3);
   const [algo, setAlgo] = useState(ALGORITHMS[1].id);
   const [activeTab, setActiveTab] = useState("manual");
@@ -121,7 +60,6 @@ function App() {
   const [screen, setScreen] = useState("input");
   const [result, setResult] = useState(null);
 
-  // --- Handlers ---
   const changeN = (value) => {
     const v = Math.max(1, Math.min(9, Number(value) || 1));
     setN(v);
@@ -139,6 +77,14 @@ function App() {
   const updateB = (r, val) =>
     setB((prev) => prev.map((x, i) => (i === r ? val : x)));
 
+  const handleError = (e) => {
+    if (e instanceof AppError) {
+      toast.error(`${t("error_prefix")}: ${formatError(t, e)}`);
+    } else {
+      toast.error(`${t("error_prefix")}: ${String(e.message || e)}`);
+    }
+  };
+
   const onCompute = () => {
     try {
       const Anum = toNumericMatrix(A);
@@ -146,70 +92,54 @@ function App() {
 
       for (let i = 0; i < n; i++) {
         for (let j = 0; j < n; j++) {
-          if (!Number.isFinite(Anum[i][j])) throw new Error(t("invalid_value_a", { r: i + 1, c: j + 1 }));
+          if (!Number.isFinite(Anum[i][j])) throw makeErr(ERR.INVALID_A, { r: i + 1, c: j + 1 });
         }
-        if (!Number.isFinite(bnum[i])) throw new Error(t("invalid_value_b", { r: i + 1 }));
+        if (!Number.isFinite(bnum[i])) throw makeErr(ERR.INVALID_B, { r: i + 1 });
       }
 
       const selectedAlgorithm = ALGORITHMS.find(a => a.id === algo);
-      if (!selectedAlgorithm) {
-          throw new Error("Selected algorithm not found.");
-      }
+      if (!selectedAlgorithm) throw new Error("Algorithm not found");
 
-      const { solution, steps, error: algoError } = selectedAlgorithm.solver(Anum, bnum, t);
+      const { solution, steps, error } = selectedAlgorithm.solver(Anum, bnum, t);
+      if (error) throw error;
+      if (!solution) throw makeErr(ERR.NO_SOLUTION);
 
-      if (algoError) {
-          throw new Error(algoError);
-      }
-
-      setResult({ x: solution, algorithm: algo, n, steps });
+      const flag = validateSolution(Anum, bnum, solution, 1e-6);
+      setResult({ x: solution, algorithm: algo, n, steps, flag });
       setScreen("result");
     } catch (e) {
-      toast.error(`${t("error_prefix")}: ${e.message}`);
+      handleError(e);
     }
   };
 
-  // Функція-обгортка, яка буде викликати наш імпортований парсер
   const handleFileParse = (file) => {
-    // Формуємо об'єкт-контекст з усіма необхідними даними та функціями
-    const context = {
-      changeN,
-      setA,
-      setB,
-      setActiveTab,
-      t,
-      toast,
-    };
-    // Викликаємо парсер, передаючи файл та контекст
+    const context = { changeN, setA, setB, setActiveTab, t, toast };
     parseFile(file, context);
   };
 
   return (
     <div className="page">
       <Toaster position="top-center" reverseOrder={false} />
-      {/* ===== HEADER ===== */}
       <header className="header">
-        <div className="container header-grid">
-          <div className="header-part left header-text">{t("header_left")}</div>
-          <div className="header-part center header-text">{t("header_center")}</div>
-          <div className="header-part right header-text">{t("header_right")}</div>
-          <div className="header-part language-switcher">
-            <label className="label" htmlFor="language-select">{t("language_switcher_label")}</label>
-            <select
-              id="language-select"
-              className="input"
-              value={language}
-              onChange={(e) => setLanguage(e.target.value)}
-              style={{ width: 'unset', minWidth: '80px', textAlign: 'center' }}
-            >
-              <option value="uk">Українська</option>
-              <option value="en">English</option>
-            </select>
-          </div>
+      <div className="container header-grid">
+        <div className="header-part left header-text">{t("header_left")}</div>
+        <div className="header-part center header-text">{t("header_center")}</div>
+        <div className="header-part right header-text">{t("header_right")}</div>
+        <div className="header-part language-switcher">
+          <select
+            id="language-select"
+            className="input"
+            value={language}
+            onChange={(e) => setLanguage(e.target.value)}
+            style={{ width: 'unset', minWidth: '80px', textAlign: 'center' }}
+          >
+            <option value="uk">Українська</option>
+            <option value="en">English</option>
+          </select>
         </div>
-      </header>
+      </div>
+    </header>
 
-      {/* ===== MAIN ===== */}
       <main className="container main">
         {screen === "input" ? (
           <InputPage
@@ -230,22 +160,11 @@ function App() {
             ALGORITHMS={ALGORITHMS}
           />
         ) : (
-          <ResultPage
-            t={t}
-            result={result}
-            setScreen={setScreen}
-            ALGORITHMS={ALGORITHMS}
-          />
+          <ResultPage t={t} result={result} setScreen={setScreen} ALGORITHMS={ALGORITHMS} />
         )}
       </main>
-
-      {/* ===== FOOTER ===== */}
-      <footer className="container footer">
-        {t("footer_text")}
-      </footer>
     </div>
   );
 }
 
 export default App;
-

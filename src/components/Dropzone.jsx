@@ -25,7 +25,7 @@ const Dropzone = ({ t, parseFile, fileInputRef }) => {
       <input
         ref={fileInputRef}
         type="file"
-        accept=".csv,.txt"
+        accept=".txt, text/plain"
         className="hidden"
         onChange={(e) =>
           e.target.files && parseFile(e.target.files[0])

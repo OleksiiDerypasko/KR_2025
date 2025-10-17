@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import MatrixInput from '../components/MatrixInput';
 import Dropzone from '../components/Dropzone';
 import MethodSelector from '../components/MethodSelector';
+import GuidelinesPage from '../pages/GuidelinesPage';
 
 const InputPage = ({
   t,
@@ -51,7 +52,8 @@ const InputPage = ({
       </section>
 
       {/* Tabs */}
-      <nav className="tabs" role="tablist" aria-label={`${t('tab_manual_input')} / ${t('tab_drag_drop')}`}>
+      <nav className="tabs" role="tablist"
+     aria-label={`${t('tab_manual_input')} / ${t('tab_drag_drop')} / ${t('guidelines_title')}`}>
         {TABS.map((tab) => (
           <button
             key={tab.id}
@@ -65,24 +67,16 @@ const InputPage = ({
         ))}
       </nav>
 
-      {/* Manual input */}
       {activeTab === 'manual' && (
-        <MatrixInput
-          A={A}
-          b={b}
-          updateA={updateA}
-          updateB={updateB}
-        />
+        <MatrixInput A={A} b={b} updateA={updateA} updateB={updateB} />
       )}
 
-      {/* Drag & Drop */}
       {activeTab === 'dnd' && (
-        <Dropzone
-          t={t}
-          parseFile={parseFile}
-          fileInputRef={fileInputRef}
-        />
+        <Dropzone t={t} parseFile={parseFile} fileInputRef={fileInputRef} />
       )}
+
+      {activeTab === 'guide' && <GuidelinesPage t={t} />}
+
     </>
   );
 };
