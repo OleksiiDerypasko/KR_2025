@@ -256,3 +256,103 @@
 html {
   scroll-behavior: smooth;
 }
+
+/* Додайте це в кінець файлу src/App.css */
+
+.matrix-display-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 1rem;
+}
+
+.matrix-grid, .vector-grid {
+  display: grid;
+  gap: 5px;
+}
+
+.vector-grid {
+  grid-template-columns: 1fr;
+}
+
+.matrix-separator {
+  width: 1px;
+  background-color: #ccc;
+  height: 100%; /* Або фіксована висота */
+}
+
+.matrix-cell {
+  padding: 8px;
+  text-align: center;
+  background-color: #f4f4f4;
+  border-radius: 4px;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+/* 🔥 СТИЛЬ ДЛЯ ПІДСВІЧУВАННЯ 🔥 */
+.matrix-cell.highlighted-column {
+  background-color: #e0f7fa; /* Світло-блакитний */
+  color: #00796b; /* Темно-бірюзовий */
+  font-weight: bold;
+  border: 1px solid #4dd0e1;
+}
+
+.result-pre {
+  white-space: pre-wrap;
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  background: #f9f9f9;
+  padding: 0.5rem;
+  border-radius: 4px;
+  overflow-x: auto;
+}
+
+/* Стилі для візуалізації методу Гаусса */
+.eqRow {
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+  border: 1px solid transparent;
+  margin: 2px 0;
+}
+
+.eqRow.pivot-row {
+  background-color: #fffbe6; /* Світло-жовтий */
+  border-color: #ffe58f;
+}
+
+.eqRow.target-row {
+  background-color: #e6f7ff; /* Світло-синій */
+  border-color: #91d5ff;
+}
+
+.eqRow.swap-row {
+  background-color: #f6ffed; /* Світло-зелений */
+  border-color: #b7eb8f;
+}
+
+.coef-display.pivot-element {
+  font-weight: bold;
+  color: #d46b08;
+  padding: 2px 4px;
+  border-radius: 3px;
+  background-color: #fff1b8;
+  outline: 1px solid #ffd666;
+}
+
+/* src/App.css */
+.result-pre {
+  white-space: pre-wrap;
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  background: #f9f9f9;
+  padding: 0.5rem;
+  border-radius: 4px;
+  overflow-x: auto;
+  line-height: 1.5;
+}
+
+.result-pre.summary {
+  margin-top: 0.75rem;
+  background-color: #f0f9ff;
+  border: 1px solid #e0f2fe;
+  color: #0c4a6e;
+}

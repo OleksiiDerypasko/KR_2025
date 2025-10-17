@@ -1,7 +1,7 @@
-// src/pages/GuidelinesPage.jsx
 import React from 'react';
 import MatrixVisual from '../components/MatrixVisual';
 import FileStructureVisual from '../components/FileStructureVisual';
+import MathRenderer from '../components/MathRenderer';
 import './GuidelinesPage.css';
 
 const GuidelinesPage = ({ t }) => {
@@ -14,32 +14,53 @@ const GuidelinesPage = ({ t }) => {
         {
           id: 'algo-cramer',
           title: t('cramer_method'),
-          description: t('algo_cramer_full_desc'),
-          visual: <MatrixVisual matrix={[['A₁₁', 'A₁₂', 'b₁'], ['A₂₁', 'A₂₂', 'b₂'], ['A₃₁', 'A₃₂', 'b₃']]} highlights={{ type: 'vector' }} />
+          descriptionKey: 'algo_cramer_full_desc',
+          visual: <MatrixVisual 
+            title="A → Aⱼ"
+            matrix={[['a₁₁', 'b₁', 'a₁₃'], ['a₂₁', 'b₂', 'a₂₃'], ['a₃₁', 'b₃', 'a₃₃']]} 
+            highlights={{ type: 'vector', col: 1 }} 
+          />
         },
         {
           id: 'algo-gauss',
           title: t('gauss_method'),
-          description: t('algo_gauss_full_desc'),
-          visual: <MatrixVisual matrix={[['A₁₁', 'A₁₂', 'A₁₃'], ['0', 'A₂₂', 'A₂₃'], ['0', '0', 'A₃₃']]} highlights={{ type: 'diagonal' }} />
+          descriptionKey: 'algo_gauss_full_desc',
+          visual: <MatrixVisual 
+            title="Трикутна матриця"
+            matrix={[['a₁₁', 'a₁₂', 'a₁₃'], ['0', 'a₂₂', 'a₂₃'], ['0', '0', 'a₃₃']]} 
+            highlights={{ type: 'diagonal' }} 
+          />
         },
         {
           id: 'algo-gj',
           title: t('gauss_jordan_method'),
-          description: t('algo_gj_full_desc'),
-          visual: <MatrixVisual matrix={[['1', '0', '0'], ['0', '1', '0'], ['0', '0', '1']]} highlights={{ type: 'diagonal' }} />
+          descriptionKey: 'algo_gj_full_desc',
+          visual: <MatrixVisual 
+            title="Одинична матриця"
+            matrix={[['1', '0', '0'], ['0', '1', '0'], ['0', '0', '1']]} 
+            highlights={{ type: 'diagonal' }} 
+          />
         },
         {
           id: 'algo-jacobi',
           title: t('jacobi_method'),
-          description: t('algo_jacobi_full_desc'),
-          visual: <MatrixVisual matrix={[['x₁⁽ᵏ⁺¹⁾'], ['x₂⁽ᵏ⁺¹⁾'], ['x₃⁽ᵏ⁺¹⁾']]} />
+          descriptionKey: 'algo_jacobi_full_desc',
+          visual: <div className="visual-iteration">
+            <MatrixVisual matrix={[['x₁⁽ᵏ⁾'], ['x₂⁽ᵏ⁾'], ['x₃⁽ᵏ⁾']]} />
+            <span className="arrow">→</span>
+            <MatrixVisual matrix={[['x₁⁽ᵏ⁺¹⁾'], ['x₂⁽ᵏ⁺¹⁾'], ['x₃⁽ᵏ⁺¹⁾']]} />
+          </div>
         },
         {
           id: 'algo-seidel',
           title: t('seidel_method'),
-          description: t('algo_seidel_full_desc'),
-          visual: <p className="visual-formula">xᵢ⁽ᵏ⁺¹⁾ = f(x₁⁽ᵏ⁺¹⁾, ..., xᵢ₋₁⁽ᵏ⁺¹⁾, xᵢ⁽ᵏ⁾, ...)</p>
+          descriptionKey: 'algo_seidel_full_desc',
+          visual: <div className="visual-seidel">
+            <div className="matrix-title">Покомпонентне оновлення</div>
+            {/* FIX: Using MathRenderer to correctly parse the string and avoid ESLint errors */}
+            <MathRenderer text={'Для розрахунку $x_2^{(k+1)}$:'} />
+            <MatrixVisual matrix={[['x₁⁽ᵏ⁺¹⁾'], ['x₂⁽ᵏ⁾'], ['x₃⁽ᵏ⁾']]} highlights={{ type: 'vector', row: 0 }} />
+          </div>
         },
       ]
     },
@@ -50,20 +71,31 @@ const GuidelinesPage = ({ t }) => {
         {
           id: 'cond-cramer',
           title: t('cramer_method'),
-          description: t('method_req_cramer_full_desc'),
-          visual: <MatrixVisual matrix={[['a', 'b'], ['c', 'd']]} highlights={{ type: 'determinant' }} />
+          descriptionKey: 'method_req_cramer_full_desc',
+          visual: <MatrixVisual 
+            title="det(A) ≠ 0"
+            matrix={[['a', 'b'], ['c', 'd']]} 
+            highlights={{ type: 'determinant' }} 
+          />
         },
         {
           id: 'cond-iterative',
           title: `${t('jacobi_method')} & ${t('seidel_method')}`,
-          description: t('method_req_iterative_full_desc'),
-          visual: <MatrixVisual matrix={[['10', '2', '1'], ['1', '5', '1'], ['2', '3', '10']]} highlights={{ type: 'diagonal' }} />
+          descriptionKey: 'method_req_iterative_full_desc',
+          visual: <MatrixVisual 
+            title="Діагональне переважання"
+            matrix={[['10', '2', '1'], ['1', '5', '1'], ['2', '3', '10']]} 
+            highlights={{ type: 'diagonal' }} 
+          />
         },
         {
           id: 'cond-gauss',
           title: `${t('gauss_method')} / ${t('gauss_jordan_method')}`,
-          description: t('method_req_gauss_full_desc'),
-          visual: <MatrixVisual matrix={[['A₁₁', '…', 'A₁ₙ'], ['⋮', '⋱', '⋮'], ['Aₙ₁', '…', 'Aₙₙ']]} />
+          descriptionKey: 'method_req_gauss_full_desc',
+          visual: <MatrixVisual 
+            title="Невироджена матриця"
+            matrix={[['A₁₁', '…', 'A₁ₙ'], ['⋮', '⋱', '⋮'], ['Aₙ₁', '…', 'Aₙₙ']]} 
+          />
         }
       ]
     },
@@ -73,7 +105,7 @@ const GuidelinesPage = ({ t }) => {
       items: [
         {
           id: 'file-format',
-          title: "Формат та структура файлу",
+          title: t('file_format_title'),
           description: (
             <>
               <p>{t('file_requirements_full_desc')}</p>
@@ -93,17 +125,8 @@ const GuidelinesPage = ({ t }) => {
     }
   ];
 
-  // Функція для обробки рядків, що містять LaTeX-подібні формули
-  const renderDescription = (text) => {
-    // Проста заміна для відображення LaTeX, якщо ви використовуєте MathJax/KaTeX
-    // Тут ми просто видаляємо слеші, щоб текст був читабельним
-    const processedText = text.replace(/\\\(|\\\)/g, '');
-    return <p dangerouslySetInnerHTML={{ __html: processedText }} />;
-  };
-
   return (
     <section className="card guideline-container">
-      {/* --- ЗМІСТ --- */}
       <nav className="guideline-toc">
         <h2>{t("guidelines_title")}</h2>
         <ul>
@@ -115,7 +138,6 @@ const GuidelinesPage = ({ t }) => {
         </ul>
       </nav>
 
-      {/* --- РЕНДЕРИНГ СЕКЦІЙ --- */}
       {guidelineData.map(section => (
         <section key={section.id} id={section.id} className="guideline-major-section">
           <h2>{section.title}</h2>
@@ -124,10 +146,9 @@ const GuidelinesPage = ({ t }) => {
               <div className="guideline-subsection-grid">
                 <div className="guideline-text">
                   <h3>{item.title}</h3>
-                  {/* Перевіряємо, чи опис є JSX-елементом чи звичайним рядком */}
                   {React.isValidElement(item.description) 
                     ? item.description 
-                    : renderDescription(item.description)
+                    : <MathRenderer text={t(item.descriptionKey)} />
                   }
                 </div>
                 <div className="guideline-visual">

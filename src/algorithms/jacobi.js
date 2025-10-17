@@ -1,35 +1,78 @@
+// src/algorithms/jacobi.js
 import { fmt2, fmt6 } from '../utils/matrixUtils';
 
 export const solveJacobi = (A, b, t) => {
-  const n = A.length, steps = [];
-  let x = Array(n).fill(0), maxIt = 100, tol = 1e-6;
+  const n = A.length;
+  const steps = [];
+  let x = Array(n).fill(0);
+  const maxIt = 100;
+  const tol = 1e-6;
 
-  steps.push({ title: t('initial_solution_vector'), result: `x⁰ = [${x.map(fmt2).join(', ')}]` });
+  steps.push({ titleKey: 'initial_matrix', matrix: A, b: b });
+  steps.push({ titleKey: 'initial_solution_vector', result: `x⁽⁰⁾ = [${x.map(fmt2).join(', ')}]` });
 
-  const residualInf = (xv)=>{
-    let m=0; for (let i=0;i<n;i++){ let s=0; for (let j=0;j<n;j++) s+=A[i][j]*xv[j]; m=Math.max(m,Math.abs(s-b[i])); }
+  const residualInf = (xv) => {
+    let m = 0;
+    for (let i = 0; i < n; i++) {
+      let s = 0;
+      for (let j = 0; j < n; j++) s += A[i][j] * xv[j];
+      m = Math.max(m, Math.abs(s - b[i]));
+    }
     return m;
   };
 
-  for (let it=1; it<=maxIt; it++){
-    const xn = Array(n).fill(0);
-    const lines = [];
-    for (let i=0;i<n;i++){
-      let sum=0, terms=[];
-      for (let j=0;j<n;j++) if (i!==j){ sum += A[i][j]*x[j]; terms.push(`(${fmt2(A[i][j])})·x${j+1}⁽${it-1}⁾`); }
-      xn[i] = (b[i]-sum)/A[i][i];
-      lines.push(`x${i+1}⁽${it}⁾ = ( ${fmt2(b[i])} − ${terms.join(' − ')||'0'} ) / ${fmt2(A[i][i])} = ${fmt2(xn[i])}`);
+  for (let it = 1; it <= maxIt; it++) {
+    const xNew = Array(n).fill(0);
+    const derivationLines = [];
+
+    for (let i = 0; i < n; i++) {
+      let sum = 0;
+      const terms_symbolic = [];
+      const terms_numeric = [];
+
+      for (let j = 0; j < n; j++) {
+        if (i !== j) {
+          sum += A[i][j] * x[j];
+          terms_symbolic.push(`(${fmt2(A[i][j])})·x${j + 1}⁽${it - 1}⁾`);
+          terms_numeric.push(`(${fmt2(A[i][j])})·(${fmt2(x[j])})`);
+        }
+      }
+
+      const rhs_symbolic = terms_symbolic.join(' + ') || '0';
+      const rhs_numeric = terms_numeric.join(' + ') || '0';
+
+      const line1 = `x${i + 1}⁽${it}⁾ = ( ${fmt2(b[i])} - (${rhs_symbolic}) ) / ${fmt2(A[i][i])}`;
+      const line2 = `      = ( ${fmt2(b[i])} - (${rhs_numeric}) ) / ${fmt2(A[i][i])}`;
+
+      xNew[i] = (b[i] - sum) / A[i][i];
+      const finalResult = ` = ${fmt2(xNew[i])}`;
+      
+      derivationLines.push(line1);
+      derivationLines.push(line2 + finalResult);
     }
-    let err = 0; for (let i=0;i<n;i++) err += Math.abs(xn[i]-x[i]);
-    const r = residualInf(xn);
+
+    let err = 0;
+    for (let i = 0; i < n; i++) err += Math.abs(xNew[i] - x[i]);
+    const r = residualInf(xNew);
 
     steps.push({
-      title: `${t('iteration')} ${it}`,
-      result: lines.join('\n') + `\n‖Ax−b‖∞ = ${fmt6(r)},   Δ = ${fmt6(err)}`
+      titleKey: 'iteration_title',
+      titleParams: { it },
+      result: derivationLines.join('\n'),
+      summaryKey: 'iteration_summary',
+      summaryParams: {
+        it_minus_1: it - 1,
+        it: it,
+        x_old: `[${x.map(fmt2).join(', ')}]`,
+        x_new: `[${xNew.map(fmt2).join(', ')}]`,
+        residual: fmt6(r),
+        delta: fmt6(err)
+      }
     });
 
-    if (err < tol) return { solution: xn, steps, error: null };
-    x = xn;
+    if (err < tol) return { solution: xNew, steps, error: null };
+    
+    x = [...xNew];
   }
-  return { solution:null, steps, error: t('jacobi_not_converged') };
+  return { solution: null, steps, error: t('jacobi_not_converged') };
 };

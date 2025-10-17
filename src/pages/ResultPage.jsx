@@ -1,3 +1,4 @@
+// src/pages/ResultPage.jsx
 import React from 'react';
 import { formatNumber } from '../utils/matrixUtils';
 import MatrixDisplay from '../components/MatrixDisplay';
@@ -17,46 +18,55 @@ const ResultPage = ({ t, result, setScreen, ALGORITHMS }) => {
     );
   }
 
-  const algoLabel =
-    ALGORITHMS.find((a) => a.id === result.algorithm)?.label ||
-    result.algorithm;
+  const algoLabel = ALGORITHMS.find((a) => a.id === result.algorithm)?.label || result.algorithm;
 
   return (
     <section className="card">
       <h2 style={{ marginTop: 0 }}>{t('result_title')}</h2>
-
       <p>
         {t('algorithm_display')}: <b>{algoLabel}</b>
       </p>
 
-      {/* КРОКИ РОЗВ’ЯЗАННЯ */}
       <div className="steps-container">
-  {result.steps && result.steps.map((step, index) => (
-    <div key={index} className="step">
-      <h4>{step.title}</h4>
+        {result.steps && result.steps.map((step, index) => {
+          // Динамічно перекладаємо заголовок
+          const stepTitle = step.titleKey 
+            ? t(step.titleKey, step.titleParams) 
+            : step.title;
+          
+          // Динамічно перекладаємо основний текст та підсумок
+          const stepResult = step.resultKey 
+            ? t(step.resultKey, step.resultParams) 
+            : step.result;
+          const stepSummary = step.summaryKey 
+            ? t(step.summaryKey, step.summaryParams) 
+            : step.summary;
 
-      {step.matrix && (
-        <MatrixDisplay matrix={step.matrix} b={step.b} />
-      )}
+          return (
+            <div key={index} className="step">
+              <h4>{stepTitle}</h4>
 
-      {step.result && (
-        <pre style={{
-          whiteSpace: 'pre-wrap',
-          fontFamily: 'ui-monospace, Menlo, Consolas, monospace',
-          background: '#f9f9f9',
-          padding: '0.5rem',
-          borderRadius: '4px',
-          overflowX: 'auto'
-        }}>
-          {step.result}
-        </pre>
-      )}
-    </div>
-  ))}
-</div>
+              {step.matrix && (
+                <MatrixDisplay
+                  matrix={step.matrix}
+                  b={step.b}
+                  highlightCol={step.highlightCol}
+                  highlightInfo={step.highlightInfo}
+                />
+              )}
 
+              {stepResult && (
+                <pre className="result-pre">{stepResult}</pre>
+              )}
 
-      {/* ПІДСУМКОВИЙ РОЗВ’ЯЗОК */}
+              {stepSummary && (
+                <pre className="result-pre summary">{stepSummary}</pre>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
       <div style={{ display: 'grid', gap: 6, marginTop: '1rem' }}>
         {result.x && result.x.map((xi, i) => (
           <div key={i}>
@@ -65,7 +75,6 @@ const ResultPage = ({ t, result, setScreen, ALGORITHMS }) => {
         ))}
       </div>
 
-      {/* ТІЛЬКИ КНОПКА НАЗАД */}
       <div style={{ marginTop: 12 }}>
         <button className="btn" onClick={() => {
           setScreen('input');

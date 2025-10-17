@@ -12,20 +12,14 @@ import { solveSeidel } from "./algorithms/seidel";
 import { solveJacobi } from "./algorithms/jacobi";
 import { parseFile } from "./utils/fileParser";
 import { validateSolution } from "./utils/matrixUtils";
+import 'katex/dist/katex.min.css'; // Додайте цей рядок
 
-// прибери великий TRANSLATIONS якщо ще лишився
 import { STRINGS } from "./i18n/strings";
 import { createT } from "./i18n";
 
 import { ERR } from "./errors/codes";
 import { AppError, err as makeErr } from "./errors/AppError";
 import { formatError } from "./errors/formatError";
-
-const getInitialLanguage = () => {
-  const storedLang = localStorage.getItem("language");
-  return storedLang && STRINGS[storedLang] ? storedLang : "uk";
-};
-
 
 function App() {
   const [language, setLanguage] = useState(() => {
@@ -38,19 +32,22 @@ function App() {
     localStorage.setItem("language", language);
   }, [language]);
 
-  const TABS = [
+  // === ВИПРАВЛЕНО ТУТ: Обернуто в useMemo ===
+  // Тепер ці масиви будуть перестворюватися зі свіжими перекладами при зміні мови
+  const TABS = useMemo(() => [
     { id: "manual", label: t("tab_manual_input") },
     { id: "dnd", label: t("tab_drag_drop") },
     { id: "guide", label: t("guidelines_title") },
-  ];
+  ], [t]);
 
-  const ALGORITHMS = [
+  const ALGORITHMS = useMemo(() => [
     { id: "cramer", label: t("cramer_method"), solver: solveCramer },
     { id: "gauss", label: t("gauss_method"), solver: solveGauss },
     { id: "seidel", label: t("seidel_method"), solver: solveSeidel },
     { id: "gauss-jordan", label: t("gauss_jordan_method"), solver: solveGaussJordan },
     { id: "jacobi", label: t("jacobi_method"), solver: solveJacobi },
-  ];
+  ], [t]);
+  // === КІНЕЦЬ ВИПРАВЛЕННЯ ===
 
   const [n, setN] = useState(3);
   const [algo, setAlgo] = useState(ALGORITHMS[1].id);
@@ -121,24 +118,24 @@ function App() {
     <div className="page">
       <Toaster position="top-center" reverseOrder={false} />
       <header className="header">
-      <div className="container header-grid">
-        <div className="header-part left header-text">{t("header_left")}</div>
-        <div className="header-part center header-text">{t("header_center")}</div>
-        <div className="header-part right header-text">{t("header_right")}</div>
-        <div className="header-part language-switcher">
-          <select
-            id="language-select"
-            className="input"
-            value={language}
-            onChange={(e) => setLanguage(e.target.value)}
-            style={{ width: 'unset', minWidth: '80px', textAlign: 'center' }}
-          >
-            <option value="uk">Українська</option>
-            <option value="en">English</option>
-          </select>
+        <div className="container header-grid">
+          <div className="header-part left header-text">{t("header_left")}</div>
+          <div className="header-part center header-text">{t("header_center")}</div>
+          <div className="header-part right header-text">{t("header_right")}</div>
+          <div className="header-part language-switcher">
+            <select
+              id="language-select"
+              className="input"
+              value={language}
+              onChange={(e) => setLanguage(e.target.value)}
+              style={{ width: 'unset', minWidth: '80px', textAlign: 'center' }}
+            >
+              <option value="uk">Українська</option>
+              <option value="en">English</option>
+            </select>
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
 
       <main className="container main">
         {screen === "input" ? (

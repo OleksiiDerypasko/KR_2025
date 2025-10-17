@@ -109,3 +109,163 @@
   font-style: italic;
   color: #333;
 }
+
+.guideline-text .katex-display {
+  margin: 1rem 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.5rem 0;
+}
+
+.guideline-visual .katex-display {
+  margin: 0;
+}
+
+/* src/pages/GuidelinesPage.css */
+
+.guideline-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  line-height: 1.6;
+}
+
+/* --- Зміст (Table of Contents) --- */
+.guideline-toc {
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.guideline-toc h2 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  color: #343a40;
+  border-bottom: 2px solid #007bff;
+  padding-bottom: 0.5rem;
+}
+
+.guideline-toc ul {
+  list-style-type: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.guideline-toc li a {
+  text-decoration: none;
+  color: #0056b3;
+  transition: color 0.2s;
+  display: block;
+  padding: 0.3rem 0;
+}
+
+.guideline-toc li a:hover {
+  color: #003d80;
+  font-weight: bold;
+}
+
+/* --- Основні секції --- */
+.guideline-major-section h2 {
+  font-size: 2rem;
+  color: #212529;
+  border-bottom: 2px solid #6c757d;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* --- Підрозділи (кожен метод/правило) --- */
+.guideline-subsection {
+  padding-top: 1.5rem; /* Створює простір для якірних посилань */
+  margin-top: -1.5rem; /* Компенсує padding, щоб не було зайвого відступу */
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #e9ecef;
+}
+.guideline-subsection:last-child {
+  border-bottom: none;
+}
+
+.guideline-subsection h3 {
+  margin-top: 0;
+  font-size: 1.4rem;
+  color: #495057;
+}
+
+.guideline-subsection-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+  align-items: center;
+}
+
+.guideline-visual {
+  background-color: #f7f9fc;
+  border-radius: 8px;
+  padding: 1.5rem;
+  color: #3d3d3d;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 150px;
+}
+
+.guideline-text .katex-display {
+  margin: 1rem 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.5rem 0;
+}
+
+/* --- Стилі для візуалізації матриць та файлів --- */
+.matrix-visual { text-align: center; }
+.matrix-visual .matrix-title { font-weight: bold; margin-bottom: 0.5rem; color: #495057; }
+.matrix-visual table { border-collapse: collapse; margin: 0; }
+.matrix-visual td { border: 1px solid #ccc; padding: 0.5rem 0.8rem; text-align: center; min-width: 40px; }
+.highlight-diagonal { background-color: #fff3cd; font-weight: bold; }
+.highlight-vector { background-color: #d1e7dd; font-weight: bold; }
+.highlight-determinant { background-color: #f8d7da; }
+
+.file-visual pre { margin: 0; text-align: left; white-space: pre-wrap; line-height: 1.5; font-family: 'Courier New', Courier, monospace; }
+.file-visual .comment { color: #999; font-style: italic; }
+
+.visual-formula {
+  font-family: 'Times New Roman', Times, serif;
+  text-align: center;
+  font-size: 1.2rem;
+  font-style: italic;
+  color: #333;
+  padding: 1rem;
+}
+
+.visual-iteration {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.visual-iteration .arrow {
+  font-size: 2.5rem;
+  color: #6c757d;
+}
+
+/* ... ваші існуючі стилі ... */
+
+.visual-seidel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 1.1rem;
+}
+
+.visual-seidel .matrix-title {
+  font-weight: bold;
+  color: #495057;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 1rem;
+}
